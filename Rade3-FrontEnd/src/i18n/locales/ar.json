@@ -52,5 +52,12 @@
   "loading": "جاري التحميل...",
   "noData": "لا توجد بيانات",
   "error": "حدث خطأ",
-  "success": "تم بنجاح"
+  "success": "تم بنجاح",
+  "connectionStatus": "حالة الاتصال",
+  "connected": "متصل",
+  "disconnected": "غير متصل",
+  "connectingToBackend": "جاري الاتصال بالخادم...",
+  "backendConnected": "متصل بالخادم",
+  "backendDisconnected": "فشل الاتصال بالخادم",
+  "usingMockData": "استخدام بيانات تجريبية"
 }

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Play, Square, User, Car, Volume2, PawPrint } from 'lucide-react';
 
-const SIMULATOR_API = 'http://localhost:5001/api/simulator';
+const SIMULATOR_API = import.meta.env.VITE_SIMULATOR_API || 'http://localhost:5001/api/simulator';
+
+console.log('🎮 Simulator API:', SIMULATOR_API);
 
 interface SimulatorState {
   isRunning: boolean;
