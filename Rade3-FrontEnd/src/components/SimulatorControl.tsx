@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Play, Square, User, Car, Volume2, PawPrint } from 'lucide-react';
 
-const SIMULATOR_API = import.meta.env.VITE_SIMULATOR_API || 'http://localhost:5001/api/simulator';
+const SIMULATOR_API = import.meta.env.VITE_SIMULATOR_URL || 'http://localhost:5001';
 
-console.log('🎮 Simulator API:', SIMULATOR_API);
+console.log('🎮 Simulator URL:', SIMULATOR_API);
 
 interface SimulatorState {
   isRunning: boolean;
@@ -17,7 +17,7 @@ const SimulatorControl = () => {
 
   const fetchState = async () => {
     try {
-      const response = await fetch(`${SIMULATOR_API}/state`);
+      const response = await fetch(`${SIMULATOR_API}/api/simulator/state`);
       const data = await response.json();
       setState(data.data);
     } catch (error) {
@@ -34,7 +34,7 @@ const SimulatorControl = () => {
   const handleStart = async () => {
     setLoading(true);
     try {
-      await fetch(`${SIMULATOR_API}/start`, { method: 'POST' });
+      await fetch(`${SIMULATOR_API}/api/simulator/start`, { method: 'POST' });
       await fetchState();
     } catch (error) {
       console.error('خطأ في بدء المحاكاة:', error);
@@ -45,7 +45,7 @@ const SimulatorControl = () => {
   const handleStop = async () => {
     setLoading(true);
     try {
-      await fetch(`${SIMULATOR_API}/stop`, { method: 'POST' });
+      await fetch(`${SIMULATOR_API}/api/simulator/stop`, { method: 'POST' });
       await fetchState();
     } catch (error) {
       console.error('خطأ في إيقاف المحاكاة:', error);
@@ -55,7 +55,7 @@ const SimulatorControl = () => {
 
   const triggerEvent = async (eventType: string, riskLevel: string) => {
     try {
-      await fetch(`${SIMULATOR_API}/trigger-event`, {
+      await fetch(`${SIMULATOR_API}/api/simulator/trigger-event`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventType, riskLevel })

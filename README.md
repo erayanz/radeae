@@ -170,14 +170,20 @@ npm install
 
 ## 🚀 التشغيل
 
-### الطريقة السريعة (3 Terminals):
+### البيئة الإنتاجية (Production):
+
+**🌐 Frontend:** https://radeae.vercel.app  
+**🔌 Backend:** https://radeae-production.up.railway.app/api/v1  
+**🎮 Simulator:** https://radeae-simulator-production.up.railway.app
+
+### البيئة التطويرية (Development):
 
 **Terminal 1 - Backend:**
 ```bash
 cd D:\Tech-Projects\Rade3\Rade3-backend
 npm run dev
 ```
-🌐 Backend: https://radeae-production.up.railway.app/api/v1
+🌐 Backend: http://localhost:5000
 
 **Terminal 2 - Simulator:**
 ```bash
@@ -191,7 +197,7 @@ npm run dev
 cd D:\Tech-Projects\Rade3\Rade3-FrontEnd
 npm run dev
 ```
-💻 Frontend: http://localhost:3000
+💻 Frontend: http://localhost:5173
 
 ---
 
