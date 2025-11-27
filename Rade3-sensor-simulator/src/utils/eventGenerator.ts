@@ -2,9 +2,15 @@ import { SensorEvent } from '../types/sensor';
 import { SENSORS, EVENT_TYPES, EVENT_DESCRIPTIONS } from '../data/sensors';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+// ✅ استخدم الـ Environment Variable
 const BACKEND_URL = process.env.BACKEND_URL || 'https://radeae-production.up.railway.app/api/v1';
 const RISK_LEVELS: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
+
+console.log('📡 Simulator - Backend URL:', BACKEND_URL);
 
 function getSuggestedAction(riskLevel: string): string {
   if (riskLevel === 'high') {
@@ -89,14 +95,17 @@ export class EventGenerator {
       console.log('📤 Simulator - Sending event to backend:', {
         id: event.id,
         type: event.eventType,
-        risk: event.riskLevel
+        risk: event.riskLevel,
+        backend: BACKEND_URL
       });
       
-      await axios.post(`${BACKEND_URL}/events`, event);
+      const response = await axios.post(`${BACKEND_URL}/events`, event);
       
-      console.log('✅ Simulator - Event sent successfully');
+      console.log('✅ Simulator - Event sent successfully:', response.status);
+      return response.data;
     } catch (error) {
       console.error('❌ Simulator - Failed to send event:', error);
+      throw error;
     }
   }
 }
