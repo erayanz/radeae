@@ -52,7 +52,7 @@ interface GoogleMapViewProps {
 }
 
 const GoogleMapView = ({ events, onEventClick }: GoogleMapViewProps) => {
-  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [_map, setMap] = useState<google.maps.Map | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [showLegend, setShowLegend] = useState(true)
   const [showInfo, setShowInfo] = useState(true)

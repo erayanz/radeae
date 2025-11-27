@@ -12,7 +12,7 @@ interface ControlPanelProps {
 }
 
 const ControlPanel = ({ onRefresh, onFilterChange }: ControlPanelProps) => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation()
   const [systemActive, setSystemActive] = useState(true);
   const [timeRange, setTimeRange] = useState('all');
   const [eventType, setEventType] = useState('all');

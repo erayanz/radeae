@@ -24,7 +24,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [apiConnected, setApiConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const { toast } = useToast();
+  const { toast: _toast } = useToast()
 
   useEffect(() => {
     const fetchEvents = async () => {
