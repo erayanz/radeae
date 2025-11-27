@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Event } from '../types';
 
-const API_BASE_URL = 'https://radeae-production.up.railway.app';
+const API_BASE_URL = 'https://radeae-production.up.railway.app/api/v1';
 
 export const eventsApi = {
   async getEvents(filters?: {
