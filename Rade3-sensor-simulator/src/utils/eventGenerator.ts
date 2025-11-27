@@ -3,7 +3,7 @@ import { SENSORS, EVENT_TYPES, EVENT_DESCRIPTIONS } from '../data/sensors';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000/api/v1';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://radeae-production.up.railway.app/api/v1';
 const RISK_LEVELS: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
 
 function getSuggestedAction(riskLevel: string): string {

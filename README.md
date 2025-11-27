@@ -150,7 +150,7 @@ npm install
 
 ### 3. إنشاء ملف .env
 ```env
-VITE_API_URL=http://localhost:5000/api/v1
+VITE_API_URL=https://radeae-production.up.railway.app/api/v1
 VITE_GOOGLE_MAPS_API_KEY=AIzaSyA0QgwJJ4IAi97moRuaR4_6qZZ2r5b-Rqw
 ```
 
@@ -177,7 +177,7 @@ npm install
 cd D:\Tech-Projects\Rade3\Rade3-backend
 npm run dev
 ```
-🌐 Backend: http://localhost:5000
+🌐 Backend: https://radeae-production.up.railway.app/api/v1
 
 **Terminal 2 - Simulator:**
 ```bash

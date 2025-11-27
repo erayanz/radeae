@@ -8,7 +8,7 @@ export class SimulationService {
   private intervalId: NodeJS.Timeout | null = null;
   private totalEventsGenerated = 0;
   private lastEventTime: string | null = null;
-  private readonly backendUrl = process.env.BACKEND_API || 'http://localhost:5000/api/v1';
+  private readonly backendUrl = process.env.BACKEND_API || 'https://radeae-production.up.railway.app/api/v1';
   private readonly interval = parseInt(process.env.SIMULATION_INTERVAL || '10000');
   
   start() {
