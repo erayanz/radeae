@@ -1,0 +1,18 @@
+
+{
+  "name": "radeae-system",
+  "version": "1.0.0",
+  "description": "Radeae - IoT Security System",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix Rade3-backend run dev\" \"npm --prefix Rade3-FrontEnd run dev\" \"npm --prefix Rade3-sensor-simulator run dev\"",
+    "dev:backend": "npm --prefix Rade3-backend run dev",
+    "dev:frontend": "npm --prefix Rade3-FrontEnd run dev",
+    "dev:simulator": "npm --prefix Rade3-sensor-simulator run dev",
+    "build": "npm --prefix Rade3-FrontEnd run build && npm --prefix Rade3-backend run build",
+    "build:frontend": "npm --prefix Rade3-FrontEnd run build",
+    "build:backend": "npm --prefix Rade3-backend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
