@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Power, Filter, Trash2 } from 'lucide-react';
+import { RefreshCw, Power, Trash2 } from 'lucide-react';
 import { eventsApi } from '../api/eventsApi';
 import { useToast } from '../context/ToastContext';
 

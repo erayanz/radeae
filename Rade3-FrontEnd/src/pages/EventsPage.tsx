@@ -6,6 +6,7 @@ import { EmptyState } from '../components/EmptyState';
 import { eventsApi } from '../api/eventsApi';
 import { mockEvents } from '../data/mockData';
 import { Event } from '../types';
+import { useToast } from '../context/ToastContext';
 
 const EventsPage = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -18,6 +19,7 @@ const EventsPage = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -107,9 +109,9 @@ const EventsPage = () => {
     try {
       await eventsApi.clearAllEvents();
       setEvents([]);
-      toast?.success('تم مسح جميع الأحداث');
+      toast.success('تم مسح جميع الأحداث');
     } catch (error) {
-      toast?.error('فشل مسح الأحداث');
+      toast.error('فشل مسح الأحداث');
     } finally {
       setClearing(false);
     }
