@@ -112,6 +112,11 @@ const HomePage = () => {
     setFilters(newFilters);
   };
 
+  const handleClearEvents = () => {
+    setEvents([]);
+    console.log('📋 Events cleared from state');
+  };
+
   return (
     <div className="space-y-6">
       <SimulatorControl />
@@ -137,6 +142,7 @@ const HomePage = () => {
       <ControlPanel 
         onRefresh={handleRefresh}
         onFilterChange={handleFilterChange}
+        onClearEvents={handleClearEvents}
       />
 
       {loading ? (

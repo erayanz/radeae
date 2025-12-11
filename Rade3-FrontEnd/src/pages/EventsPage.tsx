@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Download, Filter, X } from 'lucide-react';
+import { Search, Download, Filter, X, Trash2 } from 'lucide-react';
 import Container from '../components/Container';
 import EventsList from '../components/EventsList';
 import { EmptyState } from '../components/EmptyState';
@@ -17,6 +17,7 @@ const EventsPage = () => {
     timeRange: 'all'
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -97,14 +98,31 @@ const EventsPage = () => {
     setSearchQuery('');
   };
 
+  const handleClearEvents = async () => {
+    if (!window.confirm('هل أنت متأكد من مسح جميع الأحداث؟')) {
+      return;
+    }
+
+    setClearing(true);
+    try {
+      await eventsApi.clearAllEvents();
+      setEvents([]);
+      toast?.success('تم مسح جميع الأحداث');
+    } catch (error) {
+      toast?.error('فشل مسح الأحداث');
+    } finally {
+      setClearing(false);
+    }
+  };
+
   const hasActiveFilters = filters.eventType !== 'all' || filters.riskLevel !== 'all' || filters.timeRange !== 'all' || searchQuery;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-white">جميع الأحداث</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">الأحداث</h1>
         
-        <div className="flex flex-wrap gap-3 w-full lg:w-auto">
+        <div className="flex gap-3">
           <div className="relative flex-1 lg:flex-initial lg:w-64">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -130,6 +148,15 @@ const EventsPage = () => {
           >
             <Download className="w-5 h-5" />
             <span className="hidden sm:inline">تصدير CSV</span>
+          </button>
+
+          <button
+            onClick={handleClearEvents}
+            disabled={clearing}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>{clearing ? 'جاري المسح...' : 'مسح الكل'}</span>
           </button>
         </div>
       </div>

@@ -84,5 +84,17 @@ export const eventsApi = {
       console.error('خطأ في فحص صحة API:', error);
       throw error;
     }
+  },
+
+  // مسح جميع الأحداث
+  clearAllEvents: async () => {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/events/clear`);
+      console.log('🗑️ All events cleared');
+      return response.data;
+    } catch (error) {
+      console.error('خطأ في مسح الأحداث:', error);
+      throw error;
+    }
   }
 };

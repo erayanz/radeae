@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getEvents, addEvent } from '../data/mockData';
+import { getEvents, addEvent, resetEvents } from '../data/mockData';
 import { ApiResponse, Event, FilterParams, Statistics } from '../types';
 
 export const getAllEvents = (req: Request, res: Response): void => {
@@ -126,6 +126,26 @@ export const getStatistics = (req: Request, res: Response): void => {
       message: 'خطأ في جلب الإحصائيات',
       error: err.message,
       timestamp: new Date().toISOString()
+    });
+  }
+};
+
+export const clearAllEvents = (req: Request, res: Response) => {
+  try {
+    resetEvents();
+    
+    console.log('🗑️ All events cleared');
+    
+    res.json({
+      success: true,
+      message: 'تم مسح جميع الأحداث بنجاح',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Error clearing events:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to clear events'
     });
   }
 };

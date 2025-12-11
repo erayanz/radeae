@@ -1,27 +1,28 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Power } from 'lucide-react';
+import { RefreshCw, Power, Filter, Trash2 } from 'lucide-react';
+import { eventsApi } from '../api/eventsApi';
+import { useToast } from '../context/ToastContext';
 
 interface ControlPanelProps {
-  onRefresh?: () => void;
-  onFilterChange?: (filters: {
-    timeRange: string;
-    eventType: string;
-    riskLevel: string;
-  }) => void;
+  onRefresh: () => void;
+  onFilterChange: (filters: any) => void;
+  onClearEvents?: () => void;
 }
 
-const ControlPanel = ({ onRefresh, onFilterChange }: ControlPanelProps) => {
+const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanelProps) => {
   const { t: _t } = useTranslation()
+  const { toast } = useToast();
   const [systemActive, setSystemActive] = useState(true);
   const [timeRange, setTimeRange] = useState('all');
   const [eventType, setEventType] = useState('all');
   const [riskLevel, setRiskLevel] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
-    onRefresh?.();
+    onRefresh();
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
@@ -42,12 +43,54 @@ const ControlPanel = ({ onRefresh, onFilterChange }: ControlPanelProps) => {
       newFilters.riskLevel = value;
     }
 
-    onFilterChange?.(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handleClearEvents = async () => {
+    if (!window.confirm('هل أنت متأكد من مسح جميع الأحداث؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      return;
+    }
+
+    setClearing(true);
+    try {
+      await eventsApi.clearAllEvents();
+      toast?.success('تم مسح جميع الأحداث بنجاح');
+      onClearEvents?.();
+      onRefresh();
+    } catch (error) {
+      toast?.error('فشل مسح الأحداث');
+      console.error('Error clearing events:', error);
+    } finally {
+      setClearing(false);
+    }
   };
 
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <h2 className="text-xl lg:text-2xl font-bold text-white">لوحة التحكم</h2>
+        
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={onRefresh}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>تحديث</span>
+          </button>
+          
+          <button
+            onClick={handleClearEvents}
+            disabled={clearing}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>{clearing ? 'جاري المسح...' : 'مسح الكل'}</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 mt-4">
         {/* الصف الأول - حالة النظام */}
         <div className="flex items-center gap-3">
           <button
