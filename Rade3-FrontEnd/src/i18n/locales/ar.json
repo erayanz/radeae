@@ -4,6 +4,7 @@
   "dashboard": "لوحة التحكم",
   "events": "الأحداث",
   "statistics": "الإحصائيات",
+  "simulation": "المحاكاة",
   "settings": "الإعدادات",
   "map": "الخريطة",
   "sensors": "المجسات",
@@ -14,6 +15,7 @@
   "eventsToday": "أحداث اليوم",
   "dailyAverage": "متوسط يومي",
   "highRiskRate": "نسبة الخطر العالي",
+  "eventId": "المعرف",
   "eventType": "نوع الحدث",
   "riskLevel": "مستوى الخطر",
   "human": "إنسان",
@@ -58,6 +60,5 @@
   "disconnected": "غير متصل",
   "connectingToBackend": "جاري الاتصال بالخادم...",
   "backendConnected": "متصل بالخادم",
-  "backendDisconnected": "فشل الاتصال بالخادم",
-  "usingMockData": "استخدام بيانات تجريبية"
+  "backendDisconnected": "فشل الاتصال بالخادم"
 }

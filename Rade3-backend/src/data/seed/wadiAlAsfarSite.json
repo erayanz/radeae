@@ -1,0 +1,10 @@
+{
+  "id": "site-wadi-alasfar",
+  "name": "Wadi Al Asfar Seismic Survey",
+  "nameAr": "وادي الأصفر - مسح زلزالي",
+  "centerLatitude": 24.732429,
+  "centerLongitude": 46.547072842768046,
+  "boundaryPolygon": "[{\"lat\": 24.733929, \"lng\": 46.543353}, {\"lat\": 24.733929, \"lng\": 46.55079268553609}, {\"lat\": 24.730929, \"lng\": 46.55079268553609}, {\"lat\": 24.730929, \"lng\": 46.543353}]",
+  "protectionRadiusMeters": 150,
+  "zoneName": "حقل مصفوفة الجيوفونات - وادي الأصفر"
+}

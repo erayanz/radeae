@@ -15,6 +15,15 @@ dist/
 build/
 *.tsbuildinfo
 
+# Local SQLite database
+Rade3-backend/data/*.db
+
+# Claude Code local machine state (permissions allowlist, session locks) --
+# not shared project config, keep .claude/agents/ (the actual subagent
+# definitions) tracked though.
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
 # Logs
 *.log
 npm-debug.log*

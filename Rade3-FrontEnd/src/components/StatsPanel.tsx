@@ -11,9 +11,10 @@ const StatsPanel = ({ events }: StatsPanelProps) => {
   const { t } = useTranslation();
 
   const totalEvents = events.length;
-  const highRiskEvents = events.filter(e => e.riskLevel === 'high').length;
-  const mediumRiskEvents = events.filter(e => e.riskLevel === 'medium').length;
-  const lowRiskEvents = events.filter(e => e.riskLevel === 'low').length;
+  const activeEvents = events.filter(e => e.status !== 'resolved');
+  const highRiskEvents = activeEvents.filter(e => e.riskLevel === 'high').length;
+  const mediumRiskEvents = activeEvents.filter(e => e.riskLevel === 'medium').length;
+  const lowRiskEvents = activeEvents.filter(e => e.riskLevel === 'low').length;
 
   console.log('📊 StatsPanel - Rendering with:', {
     totalEvents,

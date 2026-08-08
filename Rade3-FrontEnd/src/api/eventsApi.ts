@@ -1,72 +1,47 @@
-import axios from 'axios';
+import { httpClient, API_BASE_URL } from './httpClient';
 import { Event } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://radeae-production.up.railway.app/api/v1';
-
-console.log('🌐 API Base URL:', API_BASE_URL);
-
 export const eventsApi = {
-  async getEvents(filters?: {
+  async getEvents(siteId: string, filters?: {
     eventType?: string;
     riskLevel?: string;
     timeRange?: string;
   }): Promise<Event[]> {
     try {
-      console.log('🔄 API - Fetching events with filters:', filters);
-      
-      const response = await axios.get(`${API_BASE_URL}/events`, {
-        params: filters
-      });
-
-      console.log('✅ API - Response received:', {
-        status: response.status,
-        dataType: typeof response.data,
-        hasData: !!response.data.data,
-        count: response.data.data?.length || 0
-      });
-
-      // ✅ التأكد من استخراج البيانات بشكل صحيح
-      const events = response.data.data || response.data || [];
-      
-      console.log('📊 API - Events extracted:', {
-        count: events.length,
-        first: events[0],
-        last: events[events.length - 1]
-      });
-
-      return events;
+      const response = await httpClient.get(`/sites/${siteId}/events`, { params: filters });
+      return response.data.data || response.data || [];
     } catch (error) {
       console.error('❌ API - Error fetching events:', error);
       throw error;
     }
   },
-  
+
   // جلب حدث واحد
-  getEvent: async (id: string): Promise<Event> => {
+  getEvent: async (siteId: string, id: string): Promise<Event> => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/events/${id}`);
+      const response = await httpClient.get(`/sites/${siteId}/events/${id}`);
       return response.data.data;
     } catch (error) {
       console.error('خطأ في جلب الحدث:', error);
       throw error;
     }
   },
-  
+
   // إنشاء حدث جديد
-  createEvent: async (event: Omit<Event, 'id'>): Promise<Event> => {
+  createEvent: async (siteId: string, event: Omit<Event, 'id'>): Promise<Event> => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/events`, event);
+      const response = await httpClient.post(`/sites/${siteId}/events`, event);
       return response.data.data;
     } catch (error) {
       console.error('خطأ في إنشاء الحدث:', error);
       throw error;
     }
   },
-  
+
   // جلب الإحصائيات
-  getStatistics: async () => {
+  getStatistics: async (siteId: string) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/events/stats`);
+      const response = await httpClient.get(`/sites/${siteId}/events/stats`);
       return response.data.data;
     } catch (error) {
       console.error('خطأ في جلب الإحصائيات:', error);
@@ -78,7 +53,7 @@ export const eventsApi = {
   healthCheck: async () => {
     try {
       const baseUrl = API_BASE_URL.replace('/api/v1', '');
-      const response = await axios.get(`${baseUrl}/api/health`);
+      const response = await httpClient.get(`${baseUrl}/api/health`);
       return response.data;
     } catch (error) {
       console.error('خطأ في فحص صحة API:', error);
@@ -87,13 +62,26 @@ export const eventsApi = {
   },
 
   // مسح جميع الأحداث
-  clearAllEvents: async () => {
+  clearAllEvents: async (siteId: string) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/events/clear`);
-      console.log('🗑️ All events cleared');
+      const response = await httpClient.delete(`/sites/${siteId}/events/clear`);
       return response.data;
     } catch (error) {
       console.error('خطأ في مسح الأحداث:', error);
+      throw error;
+    }
+  },
+
+  // تحديث حالة الحدث
+  updateEventStatus: async (siteId: string, id: string, status: 'acknowledged' | 'resolved', assignedTo?: string): Promise<Event> => {
+    try {
+      const response = await httpClient.patch(`/sites/${siteId}/events/${id}/status`, {
+        status,
+        ...(assignedTo ? { assignedTo } : {})
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error('خطأ في تحديث حالة الحدث:', error);
       throw error;
     }
   }

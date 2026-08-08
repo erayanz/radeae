@@ -24,11 +24,11 @@ const StatCard = ({ label, value, color, icon: Icon }: StatCardProps) => {
   }, [value]);
 
   return (
-    <div className={`bg-gray-800 border-r-4 ${colorClasses[color].split(' ')[0]} rounded-lg p-6 transition-all hover:shadow-lg hover:scale-105 cursor-pointer`}>
+    <div className={`bg-brand-navy border border-brand-graphite/60 border-r-4 ${colorClasses[color].split(' ')[0]} rounded-lg p-6 transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer`}>
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-gray-400 text-sm mb-2">{label}</p>
-          <p className={`text-4xl font-bold ${colorClasses[color].split(' ')[1]} transition-all duration-300`}>
+          <p className="text-white/50 text-sm mb-2">{label}</p>
+          <p className={`text-4xl font-bold font-tactical ${colorClasses[color].split(' ')[1]} transition-all duration-300`}>
             {count}
           </p>
         </div>

@@ -4,15 +4,20 @@ import {
   getEventById,
   createEvent,
   getStatistics,
-  clearAllEvents
+  clearAllEvents,
+  streamEvents,
+  updateEventStatusHandler
 } from '../controllers/eventsController';
+import { requireAuth, requireApiKey, requireRole, requireAuthSSE, canAccessSite } from '../middleware/auth';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
-router.get('/', getAllEvents);
-router.get('/stats', getStatistics);
-router.get('/:id', getEventById);
-router.post('/', createEvent);
-router.delete('/clear', clearAllEvents);
+router.get('/', requireAuth, canAccessSite, getAllEvents);
+router.get('/stats', requireAuth, canAccessSite, getStatistics);
+router.get('/stream', requireAuthSSE, canAccessSite, streamEvents);
+router.get('/:id', requireAuth, canAccessSite, getEventById);
+router.patch('/:id/status', requireAuth, canAccessSite, updateEventStatusHandler);
+router.post('/', requireApiKey, createEvent);
+router.delete('/clear', requireAuth, canAccessSite, requireRole('admin'), clearAllEvents);
 
 export default router;

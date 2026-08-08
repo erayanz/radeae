@@ -1,9 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Container from '../components/Container';
-import { eventsApi } from '../api/eventsApi';
-import { mockEvents } from '../data/mockData';
-import { Event } from '../types';
+import { useEventsFeed } from '../hooks/useEventsFeed';
+import { useSite } from '../context/SiteContext';
 import { TrendingUp, TrendingDown, Copy, Check } from 'lucide-react';
 
 const COLORS = {
@@ -17,32 +16,15 @@ const COLORS = {
 };
 
 const StatisticsPage = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { currentSite } = useSite();
+  const { events, loading } = useEventsFeed(currentSite?.id ?? '');
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month'>('week');
-  
+
   const lineChartRef = useRef<HTMLDivElement>(null);
   const pieChartRef = useRef<HTMLDivElement>(null);
   const barChartRef = useRef<HTMLDivElement>(null);
-  
+
   const [copiedChart, setCopiedChart] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const data = await eventsApi.getEvents();
-        setEvents(data);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents(mockEvents);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
 
   const riskDistribution = useMemo(() => {
     const high = events.filter(e => e.riskLevel === 'high').length;
@@ -128,7 +110,7 @@ const StatisticsPage = () => {
       // استخدام html2canvas لنسخ الرسم البياني
       const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(chartRef.current, {
-        backgroundColor: '#1F2937',
+        backgroundColor: '#14143C',
         scale: 2
       });
       
@@ -146,10 +128,14 @@ const StatisticsPage = () => {
     }
   };
 
+  if (!currentSite) {
+    return <div className="flex items-center justify-center min-h-[60vh] text-white/50">جاري تحميل بيانات الموقع...</div>;
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-gray-400">جاري تحميل الإحصائيات...</div>
+        <div className="text-white/50">جاري تحميل الإحصائيات...</div>
       </div>
     );
   }
@@ -161,7 +147,7 @@ const StatisticsPage = () => {
         <select
           value={timeRange}
           onChange={(e) => setTimeRange(e.target.value as any)}
-          className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700"
+          className="bg-brand-navy text-white px-4 py-2 rounded-lg border border-brand-graphite focus:border-brand-gold focus:outline-none"
         >
           <option value="day">آخر 24 ساعة</option>
           <option value="week">آخر أسبوع</option>
@@ -172,8 +158,8 @@ const StatisticsPage = () => {
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Container className="text-center">
-          <div className="text-gray-400 text-sm mb-2">أحداث اليوم</div>
-          <div className="text-4xl font-bold text-blue-400">{kpis.today}</div>
+          <div className="text-white/50 text-sm mb-2">أحداث اليوم</div>
+          <div className="text-4xl font-bold font-tactical text-brand-goldLight">{kpis.today}</div>
           <div className="flex items-center justify-center gap-2 mt-2">
             {kpis.trend > 0 ? (
               <>
@@ -182,31 +168,31 @@ const StatisticsPage = () => {
               </>
             ) : kpis.trend < 0 ? (
               <>
-                <TrendingDown className="w-4 h-4 text-green-400" />
-                <span className="text-green-400 text-sm">{kpis.trend}</span>
+                <TrendingDown className="w-4 h-4 text-emerald-400" />
+                <span className="text-emerald-400 text-sm">{kpis.trend}</span>
               </>
             ) : (
-              <span className="text-gray-400 text-sm">لا تغيير</span>
+              <span className="text-white/40 text-sm">لا تغيير</span>
             )}
           </div>
         </Container>
 
         <Container className="text-center">
-          <div className="text-gray-400 text-sm mb-2">متوسط يومي</div>
-          <div className="text-4xl font-bold text-purple-400">{kpis.avgPerDay}</div>
-          <div className="text-gray-500 text-sm mt-2">حدث/يوم</div>
+          <div className="text-white/50 text-sm mb-2">متوسط يومي</div>
+          <div className="text-4xl font-bold font-tactical text-brand-goldLight">{kpis.avgPerDay}</div>
+          <div className="text-white/40 text-sm mt-2">حدث/يوم</div>
         </Container>
 
         <Container className="text-center">
-          <div className="text-gray-400 text-sm mb-2">نسبة الخطر العالي</div>
-          <div className="text-4xl font-bold text-red-400">{kpis.highRiskRate}%</div>
-          <div className="text-gray-500 text-sm mt-2">من الأحداث</div>
+          <div className="text-white/50 text-sm mb-2">نسبة الخطر العالي</div>
+          <div className="text-4xl font-bold font-tactical text-red-400">{kpis.highRiskRate}%</div>
+          <div className="text-white/40 text-sm mt-2">من الأحداث</div>
         </Container>
 
         <Container className="text-center">
-          <div className="text-gray-400 text-sm mb-2">إجمالي الأحداث</div>
-          <div className="text-4xl font-bold text-green-400">{events.length}</div>
-          <div className="text-gray-500 text-sm mt-2">في آخر 7 أيام</div>
+          <div className="text-white/50 text-sm mb-2">إجمالي الأحداث</div>
+          <div className="text-4xl font-bold font-tactical text-emerald-400">{events.length}</div>
+          <div className="text-white/40 text-sm mt-2">في آخر 7 أيام</div>
         </Container>
       </div>
 
@@ -216,7 +202,7 @@ const StatisticsPage = () => {
           <h2 className="text-xl font-bold text-white">الأحداث عبر الوقت</h2>
           <button
             onClick={() => copyChartToClipboard(lineChartRef, 'timeline')}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all text-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-brand-navyLight hover:bg-brand-graphite border border-brand-gold/10 text-white rounded-lg transition-all text-sm"
             title="نسخ الرسم البياني"
           >
             {copiedChart === 'timeline' ? (
@@ -235,12 +221,12 @@ const StatisticsPage = () => {
         <div ref={lineChartRef}>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={timelineData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="date" stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#3A3A4A" />
+              <XAxis dataKey="date" stroke="#8A8A95" />
+              <YAxis stroke="#8A8A95" />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
-                labelStyle={{ color: '#F3F4F6' }}
+                contentStyle={{ backgroundColor: '#14143C', border: '1px solid #DCB43C33', borderRadius: '8px' }}
+                labelStyle={{ color: '#F5EFE0' }}
               />
               <Legend />
               <Line type="monotone" dataKey="high" stroke={COLORS.high} name="عالي" strokeWidth={2} />
@@ -258,7 +244,7 @@ const StatisticsPage = () => {
             <h2 className="text-xl font-bold text-white">توزيع مستويات الخطر</h2>
             <button
               onClick={() => copyChartToClipboard(pieChartRef, 'pie')}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all text-sm"
+              className="flex items-center gap-2 px-3 py-2 bg-brand-navyLight hover:bg-brand-graphite border border-brand-gold/10 text-white rounded-lg transition-all text-sm"
               title="نسخ الرسم البياني"
             >
               {copiedChart === 'pie' ? (
@@ -303,7 +289,7 @@ const StatisticsPage = () => {
             <h2 className="text-xl font-bold text-white">توزيع أنواع الأحداث</h2>
             <button
               onClick={() => copyChartToClipboard(barChartRef, 'bar')}
-              className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all text-sm"
+              className="flex items-center gap-2 px-3 py-2 bg-brand-navyLight hover:bg-brand-graphite border border-brand-gold/10 text-white rounded-lg transition-all text-sm"
               title="نسخ الرسم البياني"
             >
               {copiedChart === 'bar' ? (
@@ -322,11 +308,11 @@ const StatisticsPage = () => {
           <div ref={barChartRef}>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={typeDistribution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#3A3A4A" />
+                <XAxis dataKey="name" stroke="#8A8A95" />
+                <YAxis stroke="#8A8A95" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                  contentStyle={{ backgroundColor: '#14143C', border: '1px solid #DCB43C33', borderRadius: '8px' }}
                 />
                 <Bar dataKey="value" fill="#3B82F6">
                   {typeDistribution.map((entry, index) => (

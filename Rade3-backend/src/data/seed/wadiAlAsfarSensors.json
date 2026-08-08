@@ -1,0 +1,86 @@
+[
+  {
+    "sensorLabel": "CH005",
+    "name": "جيوفون CH005 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.544353,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH015",
+    "name": "جيوفون CH015 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.544847516866916,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH025",
+    "name": "جيوفون CH025 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54534203373383,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH035",
+    "name": "جيوفون CH035 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.545836550600754,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH045",
+    "name": "جيوفون CH045 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54633106746767,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH055",
+    "name": "جيوفون CH055 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.546825584334584,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH065",
+    "name": "جيوفون CH065 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.5473201012015,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH075",
+    "name": "جيوفون CH075 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54781461806842,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH085",
+    "name": "جيوفون CH085 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54830913493534,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH095",
+    "name": "جيوفون CH095 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54880365180225,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH105",
+    "name": "جيوفون CH105 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54929816866917,
+    "status": "active"
+  },
+  {
+    "sensorLabel": "CH115",
+    "name": "جيوفون CH115 (موقع تقريبي)",
+    "latitude": 24.732429,
+    "longitude": 46.54979268553609,
+    "status": "active"
+  }
+]

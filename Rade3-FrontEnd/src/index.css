@@ -1,7 +1,78 @@
-@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ─── RADEI BRAND FONTS ─────────────────────────────────────── */
+@font-face {
+  font-family: 'Arabic';
+  src: url('/fonts/arabic/Arabic_Font_TheYearofHandicrafts-Regular.otf') format('opentype');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Arabic';
+  src: url('/fonts/arabic/Arabic_Font_TheYearofHandicrafts-Medium.otf') format('opentype');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'Arabic';
+  src: url('/fonts/arabic/Arabic_Font_TheYearofHandicrafts-SemiBold.otf') format('opentype');
+  font-weight: 600; font-display: swap;
+}
+@font-face {
+  font-family: 'Arabic';
+  src: url('/fonts/arabic/Arabic_Font_TheYearofHandicrafts-Bold.otf') format('opentype');
+  font-weight: 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Arabic';
+  src: url('/fonts/arabic/Arabic_Font_TheYearofHandicrafts-Black.otf') format('opentype');
+  font-weight: 900; font-display: swap;
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/orbitron/Display_English_Font_Orbitron-Regular.ttf') format('truetype');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/orbitron/Display_English_Font_Orbitron-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-display: swap;
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/orbitron/Display_English_Font_Orbitron-Bold.ttf') format('truetype');
+  font-weight: 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('/fonts/orbitron/Display_English_Font_Orbitron-Black.ttf') format('truetype');
+  font-weight: 900; font-display: swap;
+}
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('/fonts/rajdhani/Text_English_Font_Rajdhani-Light.ttf') format('truetype');
+  font-weight: 300; font-display: swap;
+}
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('/fonts/rajdhani/Text_English_Font_Rajdhani-Regular.ttf') format('truetype');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('/fonts/rajdhani/Text_English_Font_Rajdhani-Medium.ttf') format('truetype');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('/fonts/rajdhani/Text_English_Font_Rajdhani-SemiBold.ttf') format('truetype');
+  font-weight: 600; font-display: swap;
+}
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('/fonts/rajdhani/Text_English_Font_Rajdhani-Bold.ttf') format('truetype');
+  font-weight: 700; font-display: swap;
+}
 
 * {
   margin: 0;
@@ -10,10 +81,17 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Arabic', 'Tajawal', 'Noto Naskh Arabic', sans-serif;
+  background-color: #0A0A28;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   direction: rtl;
+}
+
+/* Sensor IDs, timestamps, coordinates, numerals — tactical/HUD feel */
+.font-tactical {
+  font-family: 'Orbitron', 'Rajdhani', monospace;
+  letter-spacing: 0.03em;
 }
 
 /* Custom scrollbar */
@@ -23,16 +101,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1F2937;
+  background: #0A0A28;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: #3A3A4A;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6B7280;
+  background: #9E7E1F;
 }
 
 /* Animation للـ panels عند الظهور */

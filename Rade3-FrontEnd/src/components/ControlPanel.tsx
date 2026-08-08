@@ -5,12 +5,13 @@ import { eventsApi } from '../api/eventsApi';
 import { useToast } from '../context/ToastContext';
 
 interface ControlPanelProps {
+  siteId: string;
   onRefresh: () => void;
   onFilterChange: (filters: any) => void;
   onClearEvents?: () => void;
 }
 
-const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanelProps) => {
+const ControlPanel = ({ siteId, onRefresh, onFilterChange, onClearEvents }: ControlPanelProps) => {
   const { t: _t } = useTranslation()
   const { toast } = useToast();
   const [systemActive, setSystemActive] = useState(true);
@@ -53,7 +54,7 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
 
     setClearing(true);
     try {
-      await eventsApi.clearAllEvents();
+      await eventsApi.clearAllEvents(siteId);
       toast?.success('تم مسح جميع الأحداث بنجاح');
       onClearEvents?.();
       onRefresh();
@@ -66,23 +67,23 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
   };
 
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 lg:p-6">
+    <div className="bg-brand-navy border border-brand-graphite/60 rounded-lg p-4 lg:p-6">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <h2 className="text-xl lg:text-2xl font-bold text-white">لوحة التحكم</h2>
-        
+
         <div className="flex flex-wrap gap-3">
           <button
             onClick={onRefresh}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+            className="flex items-center gap-2 bg-brand-gold hover:bg-brand-goldLight text-brand-deepNavy font-semibold px-4 py-2 rounded-lg transition-all"
           >
             <RefreshCw className="w-4 h-4" />
             <span>تحديث</span>
           </button>
-          
+
           <button
             onClick={handleClearEvents}
             disabled={clearing}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-brand-graphite text-white px-4 py-2 rounded-lg transition-all disabled:cursor-not-allowed"
           >
             <Trash2 className="w-4 h-4" />
             <span>{clearing ? 'جاري المسح...' : 'مسح الكل'}</span>
@@ -97,8 +98,8 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
             onClick={() => setSystemActive(!systemActive)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm lg:text-base ${
               systemActive
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                : 'bg-brand-navyLight hover:bg-brand-graphite text-white/70'
             }`}
           >
             <Power className="w-4 lg:w-5 h-4 lg:h-5" />
@@ -111,11 +112,11 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* مرشح النطاق الزمني */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-xs">النطاق الزمني:</label>
+            <label className="text-white/50 text-xs">النطاق الزمني:</label>
             <select
               value={timeRange}
               onChange={(e) => handleFilterChange('timeRange', e.target.value)}
-              className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none transition-colors text-sm"
+              className="bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite focus:border-brand-gold focus:outline-none transition-colors text-sm"
             >
               <option value="all">كل الوقت</option>
               <option value="hour">آخر ساعة</option>
@@ -126,11 +127,11 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
 
           {/* مرشح نوع الحدث */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-xs">نوع الحدث:</label>
+            <label className="text-white/50 text-xs">نوع الحدث:</label>
             <select
               value={eventType}
               onChange={(e) => handleFilterChange('eventType', e.target.value)}
-              className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none transition-colors text-sm"
+              className="bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite focus:border-brand-gold focus:outline-none transition-colors text-sm"
             >
               <option value="all">الكل</option>
               <option value="human">إنسان 👤</option>
@@ -142,11 +143,11 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
 
           {/* مرشح مستوى الخطر */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-xs">مستوى الخطر:</label>
+            <label className="text-white/50 text-xs">مستوى الخطر:</label>
             <select
               value={riskLevel}
               onChange={(e) => handleFilterChange('riskLevel', e.target.value)}
-              className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none transition-colors text-sm"
+              className="bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite focus:border-brand-gold focus:outline-none transition-colors text-sm"
             >
               <option value="all">الكل</option>
               <option value="high">عالي 🔴</option>
@@ -157,11 +158,11 @@ const ControlPanel = ({ onRefresh, onFilterChange, onClearEvents }: ControlPanel
 
           {/* زر التحديث */}
           <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-xs opacity-0">تحديث</label>
+            <label className="text-white/50 text-xs opacity-0">تحديث</label>
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm"
+              className="flex items-center justify-center gap-2 bg-brand-navyLight hover:bg-brand-graphite disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm border border-brand-graphite"
             >
               <RefreshCw className={`w-4 lg:w-5 h-4 lg:h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">تحديث الآن</span>

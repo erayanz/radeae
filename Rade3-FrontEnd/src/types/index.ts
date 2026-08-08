@@ -2,6 +2,7 @@ export interface Event {
   id: string;
   timestamp: string;
   sensorId: string;
+  siteId: string;
   eventType: 'human' | 'vehicle' | 'animal' | 'noise';
   riskLevel: 'low' | 'medium' | 'high';
   latitude: number;
@@ -9,6 +10,22 @@ export interface Event {
   zone: string;
   suggestedAction: string;
   description: string;
+  status: 'new' | 'acknowledged' | 'resolved';
+  acknowledgedBy: string | null;
+  acknowledgedAt: string | null;
+  resolvedBy: string | null;
+  resolvedAt: string | null;
+  assignedTo: string | null;
+}
+
+export interface Site {
+  id: string;
+  name: string;
+  nameAr: string;
+  centerLatitude: number;
+  centerLongitude: number;
+  boundaryPolygon: string | null;
+  protectionRadiusMeters: number | null;
 }
 
 export interface SensorLocation {

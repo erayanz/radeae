@@ -1,16 +1,18 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, Download, Filter, X, Trash2 } from 'lucide-react';
 import Container from '../components/Container';
 import EventsList from '../components/EventsList';
 import { EmptyState } from '../components/EmptyState';
 import { eventsApi } from '../api/eventsApi';
-import { mockEvents } from '../data/mockData';
-import { Event } from '../types';
+import { useEventsFeed } from '../hooks/useEventsFeed';
+import { useEventStatusHandler } from '../hooks/useEventStatusHandler';
+import { useAssignableUsers } from '../hooks/useAssignableUsers';
 import { useToast } from '../context/ToastContext';
+import { useSite } from '../context/SiteContext';
 
 const EventsPage = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { currentSite } = useSite();
+  const { events, setEvents, loading } = useEventsFeed(currentSite?.id ?? '');
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     eventType: 'all',
@@ -21,32 +23,17 @@ const EventsPage = () => {
   const [clearing, setClearing] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const data = await eventsApi.getEvents();
-        setEvents(data);
-      } catch (error) {
-        console.error('Error:', error);
-        setEvents(mockEvents);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
   const filteredEvents = useMemo(() => {
     let filtered = [...events];
 
     // Search
     if (searchQuery) {
+      const q = searchQuery.toLowerCase();
       filtered = filtered.filter(e =>
-        e.zone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        e.sensorId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        e.description.toLowerCase().includes(searchQuery.toLowerCase())
+        e.zone.toLowerCase().includes(q) ||
+        e.sensorId.toLowerCase().includes(q) ||
+        e.description.toLowerCase().includes(q) ||
+        e.id.toLowerCase().includes(q)
       );
     }
 
@@ -105,9 +92,11 @@ const EventsPage = () => {
       return;
     }
 
+    if (!currentSite) return;
+
     setClearing(true);
     try {
-      await eventsApi.clearAllEvents();
+      await eventsApi.clearAllEvents(currentSite.id);
       setEvents([]);
       toast.success('تم مسح جميع الأحداث');
     } catch (error) {
@@ -117,7 +106,14 @@ const EventsPage = () => {
     }
   };
 
+  const handleStatusChange = useEventStatusHandler(currentSite?.id ?? '', setEvents);
+  const assignableUsers = useAssignableUsers();
+
   const hasActiveFilters = filters.eventType !== 'all' || filters.riskLevel !== 'all' || filters.timeRange !== 'all' || searchQuery;
+
+  if (!currentSite) {
+    return <div className="flex items-center justify-center min-h-[60vh] text-white/50">جاري تحميل بيانات الموقع...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -126,27 +122,27 @@ const EventsPage = () => {
         
         <div className="flex gap-3">
           <div className="relative flex-1 lg:flex-initial lg:w-64">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
             <input
               type="text"
-              placeholder="بحث..."
+              placeholder="بحث بالمعرف، المنطقة، المجس..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-800 text-white pr-10 pl-4 py-2 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none"
+              className="w-full bg-brand-navy text-white pr-10 pl-4 py-2 rounded-lg border border-brand-graphite focus:border-brand-gold focus:outline-none"
             />
           </div>
-          
+
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-700 transition-all"
+            className="flex items-center gap-2 bg-brand-navy hover:bg-brand-navyLight text-white px-4 py-2 rounded-lg border border-brand-graphite transition-all"
           >
             <Filter className="w-5 h-5" />
             <span className="hidden sm:inline">تصفية</span>
           </button>
-          
+
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all"
+            className="flex items-center gap-2 bg-brand-gold hover:bg-brand-goldLight text-brand-deepNavy font-semibold px-4 py-2 rounded-lg transition-all"
           >
             <Download className="w-5 h-5" />
             <span className="hidden sm:inline">تصدير CSV</span>
@@ -155,7 +151,7 @@ const EventsPage = () => {
           <button
             onClick={handleClearEvents}
             disabled={clearing}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-brand-graphite text-white px-4 py-2 rounded-lg transition-all"
           >
             <Trash2 className="w-4 h-4" />
             <span>{clearing ? 'جاري المسح...' : 'مسح الكل'}</span>
@@ -178,14 +174,14 @@ const EventsPage = () => {
               </button>
             )}
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="text-gray-400 text-sm mb-2 block">نوع الحدث</label>
+              <label className="text-white/50 text-sm mb-2 block">نوع الحدث</label>
               <select
                 value={filters.eventType}
                 onChange={(e) => setFilters({...filters, eventType: e.target.value})}
-                className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600"
+                className="w-full bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite"
               >
                 <option value="all">الكل</option>
                 <option value="human">إنسان</option>
@@ -196,11 +192,11 @@ const EventsPage = () => {
             </div>
 
             <div>
-              <label className="text-gray-400 text-sm mb-2 block">مستوى الخطر</label>
+              <label className="text-white/50 text-sm mb-2 block">مستوى الخطر</label>
               <select
                 value={filters.riskLevel}
                 onChange={(e) => setFilters({...filters, riskLevel: e.target.value})}
-                className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600"
+                className="w-full bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite"
               >
                 <option value="all">الكل</option>
                 <option value="high">عالي</option>
@@ -210,11 +206,11 @@ const EventsPage = () => {
             </div>
 
             <div>
-              <label className="text-gray-400 text-sm mb-2 block">النطاق الزمني</label>
+              <label className="text-white/50 text-sm mb-2 block">النطاق الزمني</label>
               <select
                 value={filters.timeRange}
                 onChange={(e) => setFilters({...filters, timeRange: e.target.value})}
-                className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600"
+                className="w-full bg-brand-navyLight text-white px-3 py-2 rounded-lg border border-brand-graphite"
               >
                 <option value="all">كل الوقت</option>
                 <option value="hour">آخر ساعة</option>
@@ -235,7 +231,7 @@ const EventsPage = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400">جاري التحميل...</div>
+          <div className="text-center py-12 text-white/50">جاري التحميل...</div>
         ) : filteredEvents.length === 0 ? (
           <EmptyState
             icon={Search}
@@ -247,7 +243,7 @@ const EventsPage = () => {
             }}
           />
         ) : (
-          <EventsList events={filteredEvents} />
+          <EventsList events={filteredEvents} onStatusChange={handleStatusChange} assignableUsers={assignableUsers} />
         )}
       </Container>
     </div>
