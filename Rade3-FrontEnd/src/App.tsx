@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
 import StatisticsPage from './pages/StatisticsPage';
 import SimulationPage from './pages/SimulationPage';
+import UsersPage from './pages/UsersPage';
 import LoginPage from './pages/LoginPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastProvider } from './context/ToastContext';
@@ -24,13 +25,7 @@ function DashboardShell() {
           {currentPage === 'events' && <EventsPage />}
           {currentPage === 'statistics' && <StatisticsPage />}
           {currentPage === 'simulation' && <SimulationPage />}
-          {currentPage === 'settings' && (
-            <div className="text-center text-white/50 mt-20">
-              <div className="text-6xl mb-4">⚙️</div>
-              <h2 className="text-2xl font-bold mb-2">صفحة الإعدادات</h2>
-              <p>قيد التطوير...</p>
-            </div>
-          )}
+          {currentPage === 'settings' && <UsersPage />}
         </main>
       </div>
     </div>

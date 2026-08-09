@@ -45,6 +45,12 @@ const migrateEventsSiteColumn = (): void => {
   }
 };
 
+const migrateUsersActiveColumn = (): void => {
+  if (!columnExists('users', 'active')) {
+    db.run(`ALTER TABLE users ADD COLUMN active INTEGER NOT NULL DEFAULT 1`);
+  }
+};
+
 export const initDatabase = async (): Promise<void> => {
   const SQL = await initSqlJs({
     locateFile: (file: string) => path.join(WASM_DIR, file)
@@ -76,6 +82,7 @@ export const initDatabase = async (): Promise<void> => {
       username TEXT UNIQUE NOT NULL,
       passwordHash TEXT NOT NULL,
       role TEXT NOT NULL CHECK(role IN ('operator', 'admin')),
+      active INTEGER NOT NULL DEFAULT 1,
       createdAt TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -122,6 +129,7 @@ export const initDatabase = async (): Promise<void> => {
 
   migrateEventsStatusColumns();
   migrateEventsSiteColumn();
+  migrateUsersActiveColumn();
   db.run('CREATE INDEX IF NOT EXISTS idx_events_siteId ON events(siteId)');
 
   persist();

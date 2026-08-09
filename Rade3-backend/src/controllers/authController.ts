@@ -17,6 +17,11 @@ export const login = (req: Request, res: Response): void => {
     return;
   }
 
+  if (!user.active) {
+    res.status(403).json({ success: false, message: 'هذا الحساب معطل' });
+    return;
+  }
+
   const siteIds = getSiteIdsForUser(user.id);
   const token = signToken({ userId: user.id, username: user.username, role: user.role, siteIds });
 

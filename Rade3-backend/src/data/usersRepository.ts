@@ -7,14 +7,24 @@ export interface User {
   username: string;
   passwordHash: string;
   role: 'operator' | 'admin';
+  active: boolean;
 }
+
+// sql.js returns SQLite's INTEGER 0/1 as a plain JS number, not a boolean --
+// every read path needs this conversion, not just findByUsername, or a
+// deactivated user's `active` would be the truthy number 0 is falsy but
+// stored as inconsistent types across callers.
+const rowToUser = (row: Record<string, unknown>): User => ({
+  ...(row as unknown as Omit<User, 'active'>),
+  active: Boolean(row.active)
+});
 
 export const findByUsername = (username: string): User | undefined => {
   const db = getDb();
   const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
   stmt.bind([username]);
   const found = stmt.step();
-  const user = found ? (stmt.getAsObject() as unknown as User) : undefined;
+  const user = found ? rowToUser(stmt.getAsObject()) : undefined;
   stmt.free();
   return user;
 };
@@ -25,7 +35,8 @@ export const createUser = (username: string, password: string, role: 'operator' 
     id: uuidv4(),
     username,
     passwordHash: bcrypt.hashSync(password, 10),
-    role
+    role,
+    active: true
   };
   db.run(
     'INSERT INTO users (id, username, passwordHash, role) VALUES (?, ?, ?, ?)',
@@ -44,15 +55,34 @@ export const createUser = (username: string, password: string, role: 'operator' 
 // here would let any operator enumerate every user's site access. Site
 // scoping is only ever read internally (login, canAccessSite) via
 // getSiteIdsForUser, never returned from this general-purpose list.
-export const listUsers = (): Pick<User, 'id' | 'username' | 'role'>[] => {
+export const listUsers = (): Pick<User, 'id' | 'username' | 'role' | 'active'>[] => {
   const db = getDb();
-  const stmt = db.prepare('SELECT id, username, role FROM users ORDER BY username');
-  const users: Pick<User, 'id' | 'username' | 'role'>[] = [];
+  const stmt = db.prepare('SELECT id, username, role, active FROM users ORDER BY username');
+  const users: Pick<User, 'id' | 'username' | 'role' | 'active'>[] = [];
   while (stmt.step()) {
-    users.push(stmt.getAsObject() as unknown as Pick<User, 'id' | 'username' | 'role'>);
+    const row = stmt.getAsObject();
+    users.push({
+      id: row.id as string,
+      username: row.username as string,
+      role: row.role as 'operator' | 'admin',
+      active: Boolean(row.active)
+    });
   }
   stmt.free();
   return users;
+};
+
+export const setUserActive = (id: string, active: boolean): User | undefined => {
+  const db = getDb();
+  db.run('UPDATE users SET active = ? WHERE id = ?', [active ? 1 : 0, id]);
+  persist();
+
+  const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+  stmt.bind([id]);
+  const found = stmt.step();
+  const user = found ? rowToUser(stmt.getAsObject()) : undefined;
+  stmt.free();
+  return user;
 };
 
 export const getSiteIdsForUser = (userId: string): string[] => {
