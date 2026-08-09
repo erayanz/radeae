@@ -1,0 +1,12 @@
+# Deploys this as a static-assets-only Cloudflare Worker (the current
+# successor to classic Cloudflare Pages), bypassing Wrangler's Vite
+# auto-plugin detection -- that auto-detect path requires Vite 6+ and tries
+# to configure this as an edge-rendered Worker, which this project doesn't
+# need or use. This is a plain client-side React SPA (single index.html,
+# state-based navigation, no server-side routes) -- just serve dist/ as-is.
+name = "radeae-dashboard"
+compatibility_date = "2024-11-01"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
