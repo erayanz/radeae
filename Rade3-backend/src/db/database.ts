@@ -5,6 +5,15 @@ import path from 'path';
 const DB_PATH = path.join(__dirname, '../../data/radeae.db');
 const WASM_DIR = path.dirname(require.resolve('sql.js/dist/sql-wasm.js'));
 
+// The data/ directory isn't tracked by git (only *.db inside it is
+// gitignored, but git doesn't track empty directories at all) and nothing
+// else ever creates it -- this worked in local dev only because that
+// directory happened to already exist on disk from earlier manual setup. A
+// fresh checkout, container, or mounted volume starts with no such
+// directory, and fs.writeFileSync in persist() throws ENOENT rather than
+// creating it. Ensure it exists before anything tries to read/write it.
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
 let db: Database;
 
 const columnExists = (table: string, column: string): boolean => {
