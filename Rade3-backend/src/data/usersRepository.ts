@@ -85,6 +85,16 @@ export const setUserActive = (id: string, active: boolean): User | undefined => 
   return user;
 };
 
+export const getUserById = (id: string): User | undefined => {
+  const db = getDb();
+  const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
+  stmt.bind([id]);
+  const found = stmt.step();
+  const user = found ? rowToUser(stmt.getAsObject()) : undefined;
+  stmt.free();
+  return user;
+};
+
 export const getSiteIdsForUser = (userId: string): string[] => {
   const db = getDb();
   const stmt = db.prepare('SELECT siteId FROM user_sites WHERE userId = ?');

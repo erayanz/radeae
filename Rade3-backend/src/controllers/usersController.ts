@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { listUsers, createUser, findByUsername, setUserActive } from '../data/usersRepository';
+import { listUsers, createUser, findByUsername, setUserActive, getUserById, getSiteIdsForUser, setSiteIdsForUser } from '../data/usersRepository';
+import { getSiteById } from '../data/sitesRepository';
 
 export const getAllUsers = (req: Request, res: Response): void => {
   try {
@@ -32,7 +33,15 @@ export const createUserHandler = (req: Request, res: Response): void => {
       res.status(409).json({ success: false, message: 'اسم المستخدم مستخدم بالفعل' });
       return;
     }
-    const user = createUser(username, password, role === 'admin' ? 'admin' : 'operator', siteIds);
+    const resolvedRole = role === 'admin' ? 'admin' : 'operator';
+    // Empty siteIds means "global access" for admin (see canAccessSite),
+    // but means "no access to anything" for operator -- block creating a
+    // locked-out operator account by accident.
+    if (resolvedRole === 'operator' && (!siteIds || siteIds.length === 0)) {
+      res.status(400).json({ success: false, message: 'يجب اختيار موقع واحد على الأقل للمشغّل' });
+      return;
+    }
+    const user = createUser(username, password, resolvedRole, siteIds);
     res.status(201).json({
       success: true,
       message: 'تم إنشاء المستخدم بنجاح',
@@ -79,5 +88,64 @@ export const setUserActiveHandler = (req: Request, res: Response): void => {
   } catch (error) {
     const err = error as Error;
     res.status(500).json({ success: false, message: 'خطأ في تحديث حالة المستخدم', error: err.message, timestamp: new Date().toISOString() });
+  }
+};
+
+export const getUserSitesHandler = (req: Request, res: Response): void => {
+  try {
+    const { id } = req.params;
+    if (!getUserById(id)) {
+      res.status(404).json({ success: false, message: 'المستخدم غير موجود' });
+      return;
+    }
+    res.status(200).json({ success: true, data: { siteIds: getSiteIdsForUser(id) }, timestamp: new Date().toISOString() });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({ success: false, message: 'خطأ في جلب مواقع المستخدم', error: err.message, timestamp: new Date().toISOString() });
+  }
+};
+
+export const setUserSitesHandler = (req: Request, res: Response): void => {
+  try {
+    const { id } = req.params;
+    const { siteIds } = req.body as { siteIds?: string[] };
+
+    const target = getUserById(id);
+    if (!target) {
+      res.status(404).json({ success: false, message: 'المستخدم غير موجود' });
+      return;
+    }
+    if (!Array.isArray(siteIds)) {
+      res.status(400).json({ success: false, message: 'siteIds يجب أن تكون قائمة' });
+      return;
+    }
+
+    // An operator with an empty siteIds list has access to nothing (unlike
+    // admin, where empty siteIds means "global access" -- see
+    // middleware/auth.ts canAccessSite). Block this at the API level so it
+    // can't be recreated the same way the Users page's create form allowed
+    // it before this fix.
+    if (target.role === 'operator' && siteIds.length === 0) {
+      res.status(400).json({ success: false, message: 'يجب اختيار موقع واحد على الأقل للمشغّل' });
+      return;
+    }
+
+    for (const siteId of siteIds) {
+      if (!getSiteById(siteId)) {
+        res.status(400).json({ success: false, message: `الموقع غير موجود: ${siteId}` });
+        return;
+      }
+    }
+
+    setSiteIdsForUser(id, siteIds);
+    res.status(200).json({
+      success: true,
+      message: 'تم تحديث مواقع المستخدم',
+      data: { id, siteIds },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({ success: false, message: 'خطأ في تحديث مواقع المستخدم', error: err.message, timestamp: new Date().toISOString() });
   }
 };

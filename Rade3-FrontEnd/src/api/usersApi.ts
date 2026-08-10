@@ -26,5 +26,15 @@ export const usersApi = {
   async setUserActive(id: string, active: boolean): Promise<AssignableUser> {
     const response = await httpClient.patch(`/users/${id}/active`, { active });
     return response.data.data;
+  },
+
+  async getUserSites(id: string): Promise<string[]> {
+    const response = await httpClient.get(`/users/${id}/sites`);
+    return response.data.data.siteIds;
+  },
+
+  async setUserSites(id: string, siteIds: string[]): Promise<string[]> {
+    const response = await httpClient.patch(`/users/${id}/sites`, { siteIds });
+    return response.data.data.siteIds;
   }
 };
